@@ -1,0 +1,51 @@
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #f5f5f5;
+}
+
+/* CONTENEDOR */
+.container {
+  padding: 15px;
+}
+
+/* BOTÓN */
+.btn {
+  background: #ff3b30;
+  color: white;
+  padding: 12px;
+  border: none;
+  border-radius: 10px;
+  font-weight: bold;
+}
+
+/* CATEGORÍAS */
+.categories {
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  margin: 15px 0;
+}
+
+.category {
+  background: white;
+  padding: 10px;
+  border-radius: 10px;
+  min-width: 90px;
+  text-align: center;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+/* PRODUCTO */
+.card {
+  background: white;
+  border-radius: 10px;
+  padding: 10px;
+  margin-top: 15px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.price {
+  color: red;
+  font-weight: bold;
+}
