@@ -1,120 +1,140 @@
 "use client";
-import React, { useState, useEffect, useMemo } from "react";
-import {
-  Search, ShoppingBag, User, Plus, Minus,
-  Phone, MessageSquare, ArrowRight, ShoppingBasket
-} from "lucide-react";
+import { useState, useMemo } from "react";
+import { ShoppingCart, Plus, Minus, Trash2, Search, ChevronRight } from "lucide-react";
 
-import L from "leaflet";
-import "leaflet/dist/leaflet.css";
-
-// Iconos
-const Icons = {
-  Lacteos: () => (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="w-8 h-8">
-      <path d="M6 18h12l1-9H5l1 9z" />
-      <path d="M10 6h4l.5 3h-5L10 6z" />
-      <circle cx="12" cy="14" r="2" />
-    </svg>
-  ),
-  Frutas: () => (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="w-8 h-8">
-      <path d="M12 22s-8-4.5-8-11.8A8 8 0 0 1 12 3a8 8 0 0 1 8 7.2c0 7.3-8 11.8-8 11.8z" />
-      <circle cx="12" cy="10" r="3" />
-    </svg>
-  ),
-  Carnes: () => (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="w-8 h-8">
-      <path d="M15 5c0 3.5-2.5 4.5-5 4.5s-5-1-5-4.5 2.24-4 5-4 5 .5 5 4z" />
-      <path d="M15 5c0 4-4 15-4 15s-6-11-6-15" />
-    </svg>
-  ),
-  Panaderia: () => (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="w-8 h-8">
-      <path d="M3 13c3.5-3 14.5-3 18 0" />
-      <path d="M3 13v6a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-6" />
-    </svg>
-  )
-};
-
-const COTUI_CENTER = [19.0528, -70.1492];
-
-export default function App() {
-  const [view, setView] = useState("home");
+export default function SuperApp() {
   const [cart, setCart] = useState([]);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [activeCategory, setActiveCategory] = useState("Todos");
-  const [toast, setToast] = useState(null);
+  const [search, setSearch] = useState("");
+  const [category, setCategory] = useState("Todos");
+
+  const categories = ["Todos", "Lácteos", "Carnes", "Despensa", "Frutas"];
 
   const products = [
-    { id: "1", name: "Leche Rica Entera 1L", price: 78, category: "Lácteos", image: "https://images.unsplash.com/photo-1563636619-e9107da5a1bb?auto=format&fit=crop&w=300" },
-    { id: "2", name: "Aguacate Hass Cotuí", price: 45, category: "Frutas y Verduras", image: "https://images.unsplash.com/photo-1523049673857-eb18f1d7b578?auto=format&fit=crop&w=300" },
-    { id: "3", name: "Pechuga Pollo Premium", price: 185, category: "Carnes", image: "https://images.unsplash.com/photo-1604503468506-a8da13d82791?auto=format&fit=crop&w=300" },
-    { id: "4", name: "Pan Sobao Caliente", price: 55, category: "Panadería", image: "https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&w=300" }
+    { id: 1, name: "Leche Rica Entera 1L", price: 85, cat: "Lácteos", img: "https://images.unsplash.com/photo-1563636619-e9107da5a1bb?w=400" },
+    { id: 2, name: "Pan de Molde Integral", price: 145, cat: "Despensa", img: "https://images.unsplash.com/photo-1509440159596-0249088772ff?w=400" },
+    { id: 3, name: "Pechuga de Pollo Fresca", price: 210, cat: "Carnes", img: "https://images.unsplash.com/photo-1604503468506-a8da13d82791?w=400" },
+    { id: 4, name: "Arroz Selecto 10lb", price: 380, cat: "Despensa", img: "https://images.unsplash.com/photo-1586201375761-83865001e31c?w=400" },
+    { id: 5, name: "Manzanas Galas (Paquete)", price: 195, cat: "Frutas", img: "https://images.unsplash.com/photo-1560806887-1e4cd0b6bcd6?w=400" },
+    { id: 6, name: "Yogurt Natural 900g", price: 160, cat: "Lácteos", img: "https://images.unsplash.com/photo-1571212247432-8915b299b681?w=400" }
   ];
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setToast({
-        title: "Pedido en Cotuí",
-        desc: "Nuevo pedido recibido"
-      });
-      setTimeout(() => setToast(null), 3000);
-    }, 20000);
-    return () => clearInterval(interval);
-  }, []);
-
-  const filteredProducts = useMemo(() => {
-    return products.filter(p =>
-      (activeCategory === "Todos" || p.category === activeCategory) &&
-      p.name.toLowerCase().includes(searchTerm.toLowerCase())
+  const filtered = useMemo(() => {
+    return products.filter(p => 
+      (category === "Todos" || p.cat === category) &&
+      p.name.toLowerCase().includes(search.toLowerCase())
     );
-  }, [searchTerm, activeCategory]);
+  }, [search, category]);
 
   const addToCart = (product) => {
     setCart(prev => {
-      const exists = prev.find(i => i.id === product.id);
-      if (exists) return prev.map(i => i.id === product.id ? { ...i, qty: i.qty + 1 } : i);
+      const exist = prev.find(i => i.id === product.id);
+      if (exist) return prev.map(i => i.id === product.id ? { ...i, qty: i.qty + 1 } : i);
       return [...prev, { ...product, qty: 1 }];
     });
   };
 
-  const subtotal = cart.reduce((acc, i) => acc + i.price * i.qty, 0);
-
-  const MapView = () => {
-    useEffect(() => {
-      const map = L.map("map").setView(COTUI_CENTER, 15);
-      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png").addTo(map);
-      L.marker(COTUI_CENTER).addTo(map);
-      return () => map.remove();
-    }, []);
-    return <div id="map" className="w-full h-[400px]" />;
+  const decrease = (id) => {
+    setCart(prev => prev.map(i => i.id === id ? { ...i, qty: i.qty - 1 } : i).filter(i => i.qty > 0));
   };
 
+  const total = cart.reduce((acc, i) => acc + i.price * i.qty, 0);
+
   return (
-    <div className="p-6">
-      <h1 className="text-2xl font-bold mb-4">KolmaRD</h1>
+    <div className="min-h-screen bg-gray-50">
+      
+      {/* NAVEGACIÓN SUPERIOR */}
+      <header className="bg-white sticky top-0 z-40 border-b border-gray-200">
+        <div className="max-w-md mx-auto p-4">
+          <div className="flex justify-between items-center mb-4">
+            <h1 className="text-2xl font-extrabold text-green-700 tracking-tight">SuperMercado RD</h1>
+            <div className="relative">
+              <ShoppingCart className="text-gray-700" size={24} />
+              {cart.length > 0 && (
+                <span className="absolute -top-2 -right-2 bg-red-600 text-white text-[10px] w-5 h-5 flex items-center justify-center rounded-full border-2 border-white font-bold">
+                  {cart.length}
+                </span>
+              )}
+            </div>
+          </div>
 
-      <input
-        placeholder="Buscar..."
-        className="border p-2 w-full mb-4"
-        onChange={(e) => setSearchTerm(e.target.value)}
-      />
+          <div className="relative mb-4">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+            <input
+              type="text"
+              placeholder="Buscar productos y marcas..."
+              className="w-full bg-gray-100 py-3 pl-10 pr-4 rounded-xl text-sm focus:bg-white focus:ring-2 focus:ring-green-500 transition-all outline-none"
+              onChange={(e) => setSearch(e.target.value)}
+            />
+          </div>
 
-      <div className="grid grid-cols-2 gap-4">
-        {filteredProducts.map(p => (
-          <div key={p.id} className="border p-2">
-            <img src={p.image} />
-            <h2>{p.name}</h2>
-            <p>RD$ {p.price}</p>
-            <button onClick={() => addToCart(p)}>Agregar</button>
+          {/* CATEGORÍAS */}
+          <div className="flex gap-2 overflow-x-auto pb-2 no-scrollbar">
+            {categories.map(c => (
+              <button
+                key={c}
+                onClick={() => setCategory(c)}
+                className={`px-4 py-1.5 rounded-full text-sm font-medium whitespace-nowrap transition-colors ${
+                  category === c ? "bg-green-600 text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                }`}
+              >
+                {c}
+              </button>
+            ))}
+          </div>
+        </div>
+      </header>
+
+      {/* GRID DE PRODUCTOS */}
+      <main className="max-w-md mx-auto p-4 grid grid-cols-2 gap-4 pb-48">
+        {filtered.map(p => (
+          <div key={p.id} className="bg-white rounded-2xl shadow-sm border border-gray-100 flex flex-col">
+            <div className="relative">
+              <img src={p.img} className="w-full h-36 object-cover rounded-t-2xl" alt={p.name} />
+              <span className="absolute top-2 left-2 bg-white/90 backdrop-blur px-2 py-0.5 rounded text-[10px] font-bold text-gray-500 uppercase tracking-wider">
+                {p.cat}
+              </span>
+            </div>
+            <div className="p-3 flex-1 flex flex-col">
+              <h2 className="text-sm font-semibold text-gray-800 leading-tight mb-1">{p.name}</h2>
+              <p className="text-lg font-black text-green-700 mb-3">RD$ {p.price}</p>
+              <button
+                onClick={() => addToCart(p)}
+                className="w-full mt-auto bg-green-50 text-green-700 border border-green-200 py-2 rounded-xl font-bold flex items-center justify-center gap-1 active:scale-95 transition-all hover:bg-green-600 hover:text-white"
+              >
+                <Plus size={16}/> Añadir
+              </button>
+            </div>
           </div>
         ))}
-      </div>
+      </main>
 
-      <h2 className="mt-6">Carrito: RD$ {subtotal}</h2>
+      {/* CHECKOUT RESUMEN */}
+      {cart.length > 0 && (
+        <div className="fixed bottom-0 left-0 right-0 z-50 flex justify-center p-4">
+          <div className="w-full max-w-md bg-white rounded-3xl shadow-[0_-10px_40px_rgba(0,0,0,0.12)] border border-gray-100 p-5">
+            <div className="flex items-center justify-between mb-4">
+              <div>
+                <p className="text-gray-400 text-xs font-bold uppercase tracking-widest">Subtotal</p>
+                <p className="text-2xl font-black text-gray-900 font-mono">RD$ {total.toLocaleString()}</p>
+              </div>
+              <div className="flex -space-x-3 overflow-hidden">
+                {cart.slice(0, 3).map(i => (
+                  <img key={i.id} src={i.img} className="inline-block h-10 w-10 rounded-full ring-2 ring-white object-cover" />
+                ))}
+                {cart.length > 3 && (
+                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gray-100 text-xs font-bold ring-2 ring-white text-gray-500">
+                    +{cart.length - 3}
+                  </div>
+                )}
+              </div>
+            </div>
 
-      <MapView />
+            <button className="w-full bg-green-600 hover:bg-green-700 text-white py-4 rounded-2xl flex items-center justify-center gap-3 font-bold text-lg shadow-lg shadow-green-200 transition-all active:scale-[0.98]">
+              Revisar Carrito <ChevronRight size={20}/>
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
-    }
+}
